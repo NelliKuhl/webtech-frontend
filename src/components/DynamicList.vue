@@ -50,8 +50,7 @@ const mengeField = ref(0)
 const einheitField = ref('')
 
 function loadZutaten () {
-    const baseUrl= import.meta.env.VITE_BACKEND_BASE_URL
-    const endpoint = baseUrl + '/zutaten'
+    const endpoint = '/zutaten'
     const requestOptions: RequestInit = {
         method: 'GET',
         redirect: 'follow',
@@ -65,8 +64,7 @@ function loadZutaten () {
 }
 
 function save () {
-    const baseUrl= import.meta.env.VITE_BACKEND_BASE_URL
-    const endpoint = baseUrl + '/zutaten'
+    const endpoint = '/zutaten'
     const data: Zutat = {
         zutat: zutatField.value,
         menge: mengeField.value,
