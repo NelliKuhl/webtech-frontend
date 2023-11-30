@@ -1,9 +1,13 @@
+<template>
+    <main>
+        <DynamicList title="Welcome to your list"/>
+    </main>
+</template>
+
 <script setup lang="ts">
-import TheWelcome from '../components/TheWelcome.vue'
+import DynamicList from '../components/DynamicList.vue'
 </script>
 
-<template>
-  <main>
-    <TheWelcome />
-  </main>
-</template>
+<style scoped>
+
+</style>
