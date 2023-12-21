@@ -50,7 +50,8 @@ const mengeField = ref(0)
 const einheitField = ref('')
 
 function loadZutaten () {
-    const endpoint = '/zutaten'
+  const baseUrl = import.meta.env.VITE_BACKEND_BASE_URL // 'http://localhost:8080' in dev mode
+  const endpoint = baseUrl + '/zutaten'
     const requestOptions: RequestInit = {
         method: 'GET',
         redirect: 'follow',
@@ -64,7 +65,8 @@ function loadZutaten () {
 }
 
 function save () {
-    const endpoint = '/zutaten'
+  const baseUrl = import.meta.env.VITE_BACKEND_BASE_URL // 'http://localhost:8080' in dev mode
+  const endpoint = baseUrl + '/zutaten'
     const data: Zutat = {
         zutat: zutatField.value,
         menge: mengeField.value,
