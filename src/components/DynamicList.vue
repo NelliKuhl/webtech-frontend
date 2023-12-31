@@ -13,6 +13,7 @@
                 <th>Zutat</th>
                 <th>Menge</th>
                 <th>Einheit</th>
+                <th>Löschen</th>
             </tr>
             </thead>
             <tbody>
@@ -23,11 +24,18 @@
                 <td>{{item.zutat}}</td>
                 <td>{{item.menge}}</td>
                 <td>{{item.einheit}}</td>
+              <td>
+                <button @click="deleteZutat(item.id)">X</button>
+              </td>
+
             </tr>
             <tr>
                 <td>{{ zutatField }}</td>
                 <td>{{ mengeField }}</td>
                 <td>{{ einheitField }}</td>
+              <td>
+
+              </td>
             </tr>
             </tbody>
         </table>
@@ -49,7 +57,7 @@ type Zutat = { id?: number, zutat: string, menge: number, einheit: string}
 
 const zutat: Ref<Zutat[]> = ref([])
 const zutatField = ref('')
-const mengeField = ref(0)
+const mengeField = ref('')
 const einheitField = ref('')
 
 async function loadZutaten () {
@@ -72,7 +80,19 @@ async function save () {
     const response: AxiosResponse = await axios.post(endpoint, data);
     const responseData: Zutat = response.data;
     console.log('Success:', responseData)
+    zutat.value.push(responseData)
+  zutatField.value = '';
+  mengeField.value = '';
+  einheitField.value = '';
 
+}
+async function deleteZutat(id?: number) {
+  if (id) {
+    const baseUrl = import.meta.env.VITE_BACKEND_BASE_URL;
+    const endpoint = baseUrl + '/zutaten/' + id;
+    await axios.delete(endpoint);
+    zutat.value = zutat.value.filter((item) => item.id !== id);
+  }
 }
 
 // Lifecycle hooks
