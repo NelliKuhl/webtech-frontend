@@ -46,18 +46,19 @@
 import {ref, onMounted} from 'vue'
 import axios from 'axios'
 import type {AxiosResponse} from 'axios'
-//import type {Zutat} from '@/types'
+import type {Zutat} from '@/types'
 import type {Ref} from 'vue'
+
 
 defineProps<{
     title: string
 }>()
 
-type Zutat = { id?: number, zutat: string, menge: number, einheit: string}
+
 
 const zutat: Ref<Zutat[]> = ref([])
 const zutatField = ref('')
-const mengeField = ref('')
+const mengeField = ref(0)
 const einheitField = ref('')
 
 async function loadZutaten () {
@@ -82,7 +83,7 @@ async function save () {
     console.log('Success:', responseData)
     zutat.value.push(responseData)
   zutatField.value = '';
-  mengeField.value = '';
+  mengeField.value = 0;
   einheitField.value = '';
 
 }
