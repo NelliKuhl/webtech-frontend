@@ -1,1 +1,1 @@
-export type Zutat = { id?: number, zutat: string, menge: number, einheit: string}
+export type Zutat = { id?: number, zutat: string, menge: number, einheit: string, owner: String}

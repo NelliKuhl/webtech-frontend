@@ -48,6 +48,8 @@ import axios from 'axios'
 import type {AxiosResponse} from 'axios'
 import type {Zutat} from '@/types'
 import type {Ref} from 'vue'
+import { useAuth } from '@okta/okta-vue'
+import type { CustomUserClaim, CustomUserClaims, UserClaims } from '@okta/okta-auth-js'
 
 
 defineProps<{
@@ -61,9 +63,12 @@ const zutatField = ref('')
 const mengeField = ref(0)
 const einheitField = ref('')
 
-async function loadZutaten () {
+const $auth = useAuth()
+const email = ref('')
+
+async function loadZutaten (owner: string = '') {
   const baseUrl = import.meta.env.VITE_BACKEND_BASE_URL // 'http://localhost:8080' in dev mode
-  const endpoint = baseUrl + '/zutaten'
+  const endpoint = baseUrl + '/zutaten' + '?owner=' + owner
     const response: AxiosResponse = await axios.get(endpoint);
     const responseData: Zutat[] = response.data;
     responseData.forEach((z: Zutat) => {
@@ -97,8 +102,16 @@ async function deleteZutat(id?: number) {
 }
 
 // Lifecycle hooks
-onMounted(() => {
-    loadZutaten()
+onMounted(async () => {
+    let userClaims: UserClaims<CustomUserClaims> | undefined = undefined
+    try {
+        userClaims = await $auth.getUser()
+    } catch (e) {
+        console.log('Error:', e)
+    }
+    const owner = (userClaims === undefined || userClaims.email === undefined) ? '' : userClaims.email.toString()
+    email.value = owner
+    await loadZutaten(owner)
 })
 </script>
 
