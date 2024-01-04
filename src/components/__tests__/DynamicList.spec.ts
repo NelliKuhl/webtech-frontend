@@ -8,10 +8,10 @@ import axios from 'axios'
 describe('DynamicList', () => {
   const emptyResponse: Zutat[] = []
   const twoItemResponse: Zutat[] = [
-    { id: 1, zutat: 'Apfel', menge: 42, einheit: 'kg' },
-    { id: 2, zutat: 'Milch', menge: 13, einheit: 'Stück' }]
+    { id: 1, zutat: 'Apfel', menge: 42, einheit: 'kg', owner: 'Nelli' },
+    { id: 2, zutat: 'Milch', menge: 13, einheit: 'Stück', owner: 'Nelli' }]
   const oneItemResponse: Zutat[] = [
-    { id: 1, zutat: 'Apfel', menge: 42, einheit: 'kg' }
+    { id: 1, zutat: 'Apfel', menge: 42, einheit: 'kg', owner: 'Nelli' }
   ]
 
   vi.mock('axios')
