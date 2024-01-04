@@ -81,7 +81,8 @@ async function save () {
     const data: Zutat = {
         zutat: zutatField.value,
         menge: mengeField.value,
-        einheit: einheitField.value
+        einheit: einheitField.value,
+        owner: email.value
     }
     const response: AxiosResponse = await axios.post(endpoint, data);
     const responseData: Zutat = response.data;
