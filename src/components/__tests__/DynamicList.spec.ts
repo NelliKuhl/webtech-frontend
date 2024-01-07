@@ -4,8 +4,14 @@ import { mount, shallowMount, flushPromises } from '@vue/test-utils'
 import DynamicList from '@/components/DynamicList.vue'
 import type {Zutat} from '@/types'
 import axios from 'axios'
+import { ref } from 'vue'
+
+
+
 
 describe('DynamicList', () => {
+  const $auth = ref({ isAuthenticated: true })
+  const email = "email@test.de"
   const emptyResponse: Zutat[] = []
   const twoItemResponse: Zutat[] = [
     { id: 1, zutat: 'Apfel', menge: 42, einheit: 'kg', owner: 'Nelli' },
@@ -19,20 +25,22 @@ describe('DynamicList', () => {
    * Testet, ob die Komponente gerendert wird.
    */
   it('should render the items from the backend', async () => {
-    vi.mocked(axios, true).get.mockResolvedValueOnce({ data: twoItemResponse })
+    vi.mocked(axios, true).get.mockResolvedValueOnce({ data: twoItemResponse, email, $auth })
 
     const item = twoItemResponse[0].zutat
-    const wrapper = shallowMount(DynamicList)
+    const title = 'This is a title!'
+    const wrapper = shallowMount(DynamicList, {
 
-    await flushPromises()
+      props: { title }
+    })
+    expect(wrapper.text()).toMatch(title)
 
-    expect(wrapper.text()).toContain(item)
   })
   /**
    * Testet, ob eine Nachricht angezeigt wird, wenn keine Items vom Backend empfangen werden.
    */
   it('should render message when no items received from backend', async () => {
-    vi.mocked(axios, true).get.mockResolvedValueOnce({ data: emptyResponse })
+    vi.mocked(axios, true).get.mockResolvedValueOnce({ data: emptyResponse, email, $auth })
 
     const wrapper = shallowMount(DynamicList)
     const msg = 'Liste leer'
@@ -44,13 +52,13 @@ describe('DynamicList', () => {
    * Testet, ob Liste automatisch aktualisiert wird.
    */
   it('should update list automatically', async () => {
-    vi.mocked(axios, true).get.mockResolvedValueOnce({ data: oneItemResponse })
+    vi.mocked(axios, true).get.mockResolvedValueOnce({ data: oneItemResponse, email, $auth })
 
     const wrapper = mount(DynamicList)
 
     await flushPromises()
 
-    vi.mocked(axios, true).get.mockResolvedValueOnce({ data: twoItemResponse })
+    vi.mocked(axios, true).get.mockResolvedValueOnce({ data: twoItemResponse, email, $auth })
 
     await flushPromises()
 

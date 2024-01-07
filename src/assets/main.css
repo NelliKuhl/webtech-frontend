@@ -29,7 +29,8 @@ a,
 
   #app {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Änderung hier */
+    gap: 2rem; /* Füge einen Abstand zwischen den Spalten hinzu */
     padding: 0 2rem;
   }
 }

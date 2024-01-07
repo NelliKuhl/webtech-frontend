@@ -25,88 +25,53 @@ onMounted(async () => {
 })
 
 </script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+<div>
+    <header>
+      <div class="wrapper">
+        <nav>
+          <RouterLink to="/">Home</RouterLink>
+          <RouterLink v-if="!authenticated" to="/login">Login</RouterLink>
+          <a v-if="authenticated" @click="logout()">Logout</a>
+        </nav>
+      </div>
+    </header>
 
-    <div class="wrapper">
+    <main>
+      <div class="wrapper">
+        <RouterView />
+      </div>
+    </main>
+  </div>
 
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/login" v-if="!authenticated">
-            Login
-        </RouterLink> |
-          <a v-if="authenticated" v-on:click="logout()">
-              Logout
-          </a>
-      </nav>
-    </div>
-  </header>
-
-  <RouterView />
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
+.wrapper {
+  max-width: 1200px;
+  margin: auto;
+  padding: 10px;
+  text-align: center;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+header {
+  background-color: #333;
+  color: #fff;
+  border-radius: 10px;
+  margin: auto;
+  position: relative;
 }
 
 nav {
-  width: 100%;
-  font-size: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+main {
+  padding: 10px;
+  margin: auto;
   text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
+  position: relative;
 }
 </style>
