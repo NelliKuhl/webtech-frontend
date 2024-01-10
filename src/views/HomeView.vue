@@ -1,6 +1,6 @@
 <template>
     <main>
-        <DynamicList title="Welcome to your list"/>
+        <DynamicList title="Neue Liste"/>
     </main>
 </template>
 

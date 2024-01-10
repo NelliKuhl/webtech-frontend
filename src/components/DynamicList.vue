@@ -1,6 +1,12 @@
 <template>
   <div class="recipe-container">
-    <h3>{{ title }}</h3>
+    <select v-model="listId" class="dropdown-menu1" @change="loadZutaten">
+      <option value="" disabled>Auswählen</option>
+      <option v-for="list in lists" :key="list.id" :value="list.id">{{ list.name }}</option>
+    </select>
+    <h3><input v-model="namenField" placeholder="Listenname" type="text" maxlength="18"></h3>
+      <h3><button type="button" @click="addlist">+</button></h3>
+    <h3><button type="button" @click="deleteList(listId)">-</button></h3>
     <div class="form-container">
       <input v-model="zutatField" placeholder="Zutat" type="text" maxlength="18">
       <input v-model="mengeField" placeholder="Menge" type="number" @input="validateMenge" @keydown="preventE">
@@ -10,7 +16,7 @@
         <option value="Gramm">Gramm</option>
         <option value="Liter">Liter</option>
        </select>
-      <button type="button" @click="save()">&#10133;</button>
+      <button type="button" @click="addZutat()">&#10133;</button>
     </div>
     <div v-if="zutat.length > 0" class="table-container">
       <table>
@@ -46,10 +52,10 @@
 </template>
 
 <script setup lang="ts">
-import {ref, onMounted} from 'vue'
+import { ref, onMounted, type UnwrapRef, nextTick } from 'vue'
 import axios from 'axios'
 import type {AxiosResponse} from 'axios'
-import type {Zutat} from '@/types'
+import type { List, Zutat } from '@/types'
 import type {Ref} from 'vue'
 import { useAuth } from '@okta/okta-vue'
 import type {CustomUserClaims, UserClaims } from '@okta/okta-auth-js'
@@ -66,26 +72,88 @@ const zutatField = ref('')
 const mengeField = ref()
 const einheitField = ref('')
 
+const lists: Ref<List[]> = ref([])
+const namenField = ref('')
+const listId = ref()
+
 const $auth = useAuth()
 const email = ref('')
 
-async function loadZutaten (owner: string = '') {
-  const baseUrl = import.meta.env.VITE_BACKEND_BASE_URL // 'http://localhost:8080' in dev mode
-  const endpoint = baseUrl + '/zutaten' + '?owner=' + owner
+const selectedListName = ref('')
+
+/**
+ * Loads the lists from the backend.
+ * @param email The email of the user.
+ * @returns The lists.
+ */
+async function loadLists(owner: string = '') {
+  const baseUrl = import.meta.env.VITE_BACKEND_BASE_URL;
+  const endpoint = baseUrl + '/listen' + '?owner=' + owner;
+  const response: AxiosResponse = await axios.get(endpoint);
+  const responseData: List[] = response.data;
+  responseData.forEach((item) => {
+    lists.value.push(item);
+  });
+}
+
+async function addlist() {
+  const baseUrl = import.meta.env.VITE_BACKEND_BASE_URL
+  const endpoint = baseUrl + '/listen';
+    const data: List = {
+        name: namenField.value,
+        owner: email.value
+    }
+    const response: AxiosResponse = await axios.post(endpoint, data);
+    const responseData: List = response.data;
+    console.log('Success:', responseData)
+    lists.value.push(responseData)
+  namenField.value = '';
+  listId.value = responseData.id;
+  await loadZutaten();
+}
+
+/**
+ * Deletes a list from the backend + its zutaten.
+ * @param id
+ */
+async function deleteList(id?: number) {
+  if (id) {
+    const baseUrl = import.meta.env.VITE_BACKEND_BASE_URL;
+    const listeEndpoint = baseUrl + '/listen/' + id;
+    await axios.delete(listeEndpoint);
+    lists.value = lists.value.filter((item) => item.id !== id);
+    zutat.value = [];
+    zutatField.value = '';
+    mengeField.value = '';
+    einheitField.value = '';
+  }
+}
+
+/**
+ * Loads the Zutaten from the backend.
+ * @param listId The id of the list.
+ */
+async function loadZutaten() {
+  if(listId.value) {
+    const baseUrl = import.meta.env.VITE_BACKEND_BASE_URL;
+    const endpoint = baseUrl + '/listen/' + listId.value + '/zutaten';
     const response: AxiosResponse = await axios.get(endpoint);
     const responseData: Zutat[] = response.data;
-    responseData.forEach((z: Zutat) => {
-        zutat.value.push(z)
-    })}
+    zutat.value = responseData;
+  }
+}
 
-async function save () {
-  const baseUrl = import.meta.env.VITE_BACKEND_BASE_URL // 'http://localhost:8080' in dev mode
-  const endpoint = baseUrl + '/zutaten'
+/**
+ * Adds a Zutat to the backend.
+ * @param listId The id of the list.
+ */
+async function addZutat () {
+  const baseUrl = import.meta.env.VITE_BACKEND_BASE_URL
+  const endpoint = baseUrl + '/listen/'  + listId.value + '/zutaten'
     const data: Zutat = {
         zutat: zutatField.value,
         menge: mengeField.value,
-        einheit: einheitField.value,
-        owner: email.value
+        einheit: einheitField.value
     }
     const response: AxiosResponse = await axios.post(endpoint, data);
     const responseData: Zutat = response.data;
@@ -95,6 +163,10 @@ async function save () {
   mengeField.value = '';
   einheitField.value = '';
 }
+/**
+ * Deletes a Zutat from the backend.
+ * @param id The id of the Zutat.
+ */
 async function deleteZutat(id?: number) {
   if (id) {
     const baseUrl = import.meta.env.VITE_BACKEND_BASE_URL;
@@ -103,18 +175,26 @@ async function deleteZutat(id?: number) {
     zutat.value = zutat.value.filter((item) => item.id !== id);
   }
 }
+/**
+ * Prevents the quantity from exceeding the maximum quantity.
+ */
 function validateMenge() {
-  const maxMenge = 9999999; // Hier können Sie die maximale Menge ändern
+  const maxMenge = 9999999;
   if (mengeField.value > maxMenge) {
-    mengeField.value = maxMenge; // Begrenzen Sie den Wert auf die maximale Menge
+    mengeField.value = maxMenge;
   }
 }
+
+/**
+ * Prevents the letter 'e' from being entered in the input field.
+ * @param event The keyboard event.
+ */
 function preventE(event: KeyboardEvent) {
-  // Verhindern Sie das Einfügen von 'e'
   if (event.key === 'e') {
     event.preventDefault();
   }
 }
+
 // Lifecycle hooks
 onMounted(async () => {
   let userClaims: UserClaims<CustomUserClaims> | undefined = undefined
@@ -125,7 +205,8 @@ onMounted(async () => {
   }
   const owner = (userClaims === undefined || userClaims.email === undefined) ? '' : userClaims.email.toString()
   email.value = owner
-  await loadZutaten(owner)
+  await loadZutaten();
+  await loadLists();
 })
 </script>
 
@@ -208,5 +289,25 @@ th {
   border-radius: 4px;
   background-color: #fff;
   color: #333;
+}
+.dropdown-menu1 {
+  padding: 12px;
+  font-size: 16px;
+  border: 2px solid #3498db;
+  border-radius: 8px;
+  background-color: #3498db;
+  color: #ffffff;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Hinzugefügt: Schatten für Tiefeneffekt */
+}
+
+/* Hover-Effekt */
+.dropdown-menu1:hover {
+  background-color: #6eb1de;
+}
+
+/* Übergangseffekt */
+.dropdown-menu1 {
+  transition: background-color 0.3s, box-shadow 0.3s;
 }
 </style>
