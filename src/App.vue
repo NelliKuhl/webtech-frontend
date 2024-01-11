@@ -55,7 +55,7 @@ onMounted(async () => {
 }
 
 header {
-  background-color: #333;
+  background-color: rgba(110, 161, 192, 0.39);
   color: #fff;
   border-radius: 10px;
   margin: auto;

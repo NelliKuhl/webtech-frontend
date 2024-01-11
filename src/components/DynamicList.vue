@@ -1,28 +1,43 @@
 <template>
   <div class="recipe-container">
-    <select v-model="listId" class="dropdown-menu1" @change="loadZutaten">
-      <option value="" disabled>Auswählen</option>
-      <option v-for="list in lists" :key="list.id" :value="list.id">{{ list.name }}</option>
-    </select>
-    <h3><input v-model="namenField" placeholder="Listenname" type="text" maxlength="18"></h3>
-      <h3><button type="button" @click="addlist">+</button></h3>
-    <h3><button type="button" @click="deleteList(listId)">-</button></h3>
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+      <div style="display: flex; align-items: center;">
+        <h3><button type="button" @click="deleteList(listId)" class="listedeletebutton">&#x1F5D1;</button></h3>
+        <select v-model="listId" class="dropdown-menu1" @change="loadZutaten" style="margin-left: 10px;">
+          <option value="" disabled>Auswählen</option>
+          <option v-for="list in lists" :key="list.id" :value="list.id">{{ list.name }}</option>
+        </select>
+      </div>
+      <div style="display: flex; align-items: center; margin-bottom: 20px">
+        <h3><input v-model="namenField" placeholder="Neue Liste (Name)" type="text" maxlength="18" style="margin-right: 10px;"></h3>
+        <h3><button type="button" @click="addlist">Erstellen</button></h3>
+      </div>
+    </div>
+
+
+
+
+
     <div class="form-container">
-      <input v-model="zutatField" placeholder="Zutat" type="text" maxlength="18">
+      <input v-model="zutatField" placeholder="Artikel" type="text" maxlength="18">
       <input v-model="mengeField" placeholder="Menge" type="number" @input="validateMenge" @keydown="preventE">
       <select v-model="einheitField" class="dropdown-menu">
         <option value="">Auswählen</option>
-        <option value="Stück">Stück</option>
         <option value="Gramm">Gramm</option>
+        <option value="Kilogramm">Kilogramm</option>
+        <option value="Milliliter">Milliliter</option>
         <option value="Liter">Liter</option>
+        <option value="Stück">Stück</option>
+        <option value="Dose/n">Dose/n</option>
+        <option value="Packung/en">Packung/en</option>
        </select>
-      <button type="button" @click="addZutat()">&#10133;</button>
+      <button type="button" @click="addZutat()">Hinzufügen</button>
     </div>
     <div v-if="zutat.length > 0" class="table-container">
       <table>
         <thead>
         <tr>
-          <th>Zutat</th>
+          <th>Artikel</th>
           <th>Menge</th>
           <th>Einheit</th>
         </tr>
@@ -219,7 +234,7 @@ onMounted(async () => {
 
 h3 {
   text-align: center;
-  color: #3498db;
+  color:#2e85b9;
 }
 
 .form-container {
@@ -227,22 +242,34 @@ h3 {
   gap: 10px;
   margin-bottom: 20px;
   text-align: center;
+
 }
 
 input {
   flex: 1;
   padding: 8px;
-  border: 1px solid #3498db;
+  border: 1px solid #2e85b9;
   border-radius: 4px;
 }
 
 button {
-  background-color: #2ecc71;
+  background-color: #3eb26c;
   color: #fff;
   padding: 8px 15px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+}
+.listedeletebutton {
+  background-color: #bc3c3c;
+  color: #fff;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bolder;
+  font-size: larger;
+  margin-bottom: 20px;
 }
 
 table {
@@ -253,22 +280,24 @@ table {
 }
 
 th, td {
-  border: 1px solid #ddd;
+  border: 1px solid #ffffff;
   padding: 8px;
   text-align: left;
+  background-color: rgba(110, 161, 192, 0.39);
 }
 
 td:last-child {
   border: none;
+  background-color: transparent;
 }
 
 th {
-  background-color: #3498db;
+  background-color: #2e85b9;
   color: #fff;
 }
 
 .delete-button {
-  background-color: #e74c3c;
+  background-color: #bc3c3c;
   color: #fff;
   padding: 8px 15px;
   border: none;
@@ -279,13 +308,13 @@ th {
 }
 .recipe-container > div {
   text-align: center;
-  color: #999;
+  color: #000000;
   margin-top: 10px;
 }
 .dropdown-menu {
   padding: 8px;
   font-size: 14px;
-  border: 1px solid #3498db;
+  border: 1px solid #2e85b9;
   border-radius: 4px;
   background-color: #fff;
   color: #333;
@@ -293,9 +322,9 @@ th {
 .dropdown-menu1 {
   padding: 12px;
   font-size: 16px;
-  border: 2px solid #3498db;
+  border: 2px solid #2e85b9;
   border-radius: 8px;
-  background-color: #3498db;
+  background-color: #2e85b9;
   color: #ffffff;
   margin-bottom: 20px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Hinzugefügt: Schatten für Tiefeneffekt */
@@ -303,7 +332,7 @@ th {
 
 /* Hover-Effekt */
 .dropdown-menu1:hover {
-  background-color: #6eb1de;
+  background-color: #2e85b9;
 }
 
 /* Übergangseffekt */
