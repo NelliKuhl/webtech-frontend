@@ -33,7 +33,7 @@
        </select>
       <button type="button" @click="addZutat()">Hinzufügen</button>
     </div>
-    <div v-if="zutat.length > 0" class="table-container">
+    <div v-if="zutat?.length" class="table-container">
       <table>
         <thead>
         <tr>

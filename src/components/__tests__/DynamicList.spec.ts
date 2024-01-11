@@ -14,18 +14,21 @@ describe('DynamicList', () => {
   const email = "email@test.de"
   const emptyResponse: Zutat[] = []
   const twoItemResponse: Zutat[] = [
-    { id: 1, zutat: 'Apfel', menge: 42, einheit: 'kg', owner: 'Nelli' },
-    { id: 2, zutat: 'Milch', menge: 13, einheit: 'Stück', owner: 'Nelli' }]
+    { id: 1, zutat: 'Apfel', menge: 42, einheit: 'kg'},
+    { id: 2, zutat: 'Milch', menge: 13, einheit: 'Stück'}]
   const oneItemResponse: Zutat[] = [
-    { id: 1, zutat: 'Apfel', menge: 42, einheit: 'kg', owner: 'Nelli' }
+    { id: 1, zutat: 'Apfel', menge: 42, einheit: 'kg'}
   ]
 
   vi.mock('axios')
+  vi.mock('@okta/okta-vue', () => {
+    return { useAuth:async () => { $auth }}});
+
   /**
    * Testet, ob die Komponente gerendert wird.
    */
   it('should render the items from the backend', async () => {
-    vi.mocked(axios, true).get.mockResolvedValueOnce({ data: twoItemResponse, email, $auth })
+    vi.mocked(axios, true).get.mockResolvedValueOnce({ data: twoItemResponse})
 
     const item = twoItemResponse[0].zutat
     const title = 'This is a title!'
