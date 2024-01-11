@@ -52,7 +52,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, type UnwrapRef, nextTick } from 'vue'
+import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import type {AxiosResponse} from 'axios'
 import type { List, Zutat } from '@/types'
@@ -79,7 +79,6 @@ const listId = ref()
 const $auth = useAuth()
 const email = ref('')
 
-const selectedListName = ref('')
 
 /**
  * Loads the lists from the backend.
@@ -205,8 +204,9 @@ onMounted(async () => {
   }
   const owner = (userClaims === undefined || userClaims.email === undefined) ? '' : userClaims.email.toString()
   email.value = owner
+  await loadLists(owner);
   await loadZutaten();
-  await loadLists();
+
 })
 </script>
 

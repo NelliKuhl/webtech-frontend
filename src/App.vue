@@ -31,8 +31,8 @@ onMounted(async () => {
       <div class="wrapper">
         <nav>
           <RouterLink to="/">Home</RouterLink>
-          <RouterLink v-if="!authenticated" to="/login">Login</RouterLink>
-          <a v-if="authenticated" @click="logout()">Logout</a>
+          <RouterLink to="/login" v-if="!authenticated">Login</RouterLink>
+          <a v-if="authenticated" v-on:click="logout()">Logout</a>
         </nav>
       </div>
     </header>
