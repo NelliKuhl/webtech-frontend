@@ -12,11 +12,11 @@ import { ref } from 'vue'
 describe('DynamicList', () => {
   const $auth = ref({ isAuthenticated: true })
   const email = "email@test.de"
-  const emptyResponse: Zutat[] = []
-  const twoItemResponse: Zutat[] = [
+  const emptyZutat: Zutat[] = []
+  const twoZutat: Zutat[] = [
     { id: 1, zutat: 'Apfel', menge: 42, einheit: 'kg'},
     { id: 2, zutat: 'Milch', menge: 13, einheit: 'Stück'}]
-  const oneItemResponse: Zutat[] = [
+  const oneZutat: Zutat[] = [
     { id: 1, zutat: 'Apfel', menge: 42, einheit: 'kg'}
   ]
   const emptylist: List[] = []
@@ -34,7 +34,7 @@ describe('DynamicList', () => {
    * Testet, ob eine Nachricht angezeigt wird, wenn keine Items vom Backend empfangen werden.
    */
   it('should display message when no items are received from backend', async () => {
-    vi.mocked(axios, true).get.mockResolvedValueOnce({ data: emptyResponse})
+    vi.mocked(axios, true).get.mockResolvedValueOnce({ data: emptyZutat })
 
     const wrapper = mount(DynamicList)
 
@@ -42,8 +42,5 @@ describe('DynamicList', () => {
 
     expect(wrapper.text()).toContain('Liste Leer')
   })
-    /**
-   * Testet, ob die Komponente gelöscht wird.
-   */
-
+  
 })

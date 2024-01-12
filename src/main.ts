@@ -10,7 +10,8 @@ import OktaSignIn from '@okta/okta-signin-widget'
 const oktaSignIn = new OktaSignIn({
     baseUrl: 'https://trial-2076293.okta.com',
     clientId: '0oaadn5lubc4rqI3Q697',
-    redirectUri: 'https://webtech-frontend-df9q.onrender.com/login/callback',
+    redirectUri: window.location.origin + '/login/callback'
+    ,
     authParams: {
         pkce: true,
         issuer: 'https://trial-2076293.okta.com/oauth2/default',

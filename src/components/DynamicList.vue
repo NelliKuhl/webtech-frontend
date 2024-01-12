@@ -26,7 +26,7 @@
         <option value="Dose/n">Dose/n</option>
         <option value="Packung/en">Packung/en</option>
        </select>
-      <button type="button" @click="addZutat()">Hinzufügen</button>
+      <button type="button" @click="addZutat()" class="hinzufügenbutton">Hinzufügen</button>
     </div>
     <div v-if="zutat?.length" class="table-container">
       <table>
@@ -250,6 +250,15 @@ button {
   border-radius: 4px;
   cursor: pointer;
 }
+.hinzufügenbutton{
+  background-color: #3eb26c;
+  color: #fff;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
 .listedeletebutton {
   background-color: #bc3c3c;
   color: #fff;
