@@ -13,11 +13,6 @@
         <h3><button type="button" @click="addlist">Erstellen</button></h3>
       </div>
     </div>
-
-
-
-
-
     <div class="form-container">
       <input v-model="zutatField" placeholder="Artikel" type="text" maxlength="18">
       <input v-model="mengeField" placeholder="Menge" type="number" @input="validateMenge" @keydown="preventE">
@@ -75,13 +70,6 @@ import type {Ref} from 'vue'
 import { useAuth } from '@okta/okta-vue'
 import type {CustomUserClaims, UserClaims } from '@okta/okta-auth-js'
 
-
-defineProps<{
-    title: string
-}>()
-
-
-
 const zutat: Ref<Zutat[]> = ref([])
 const zutatField = ref('')
 const mengeField = ref()
@@ -93,7 +81,6 @@ const listId = ref()
 
 const $auth = useAuth()
 const email = ref('')
-
 
 /**
  * Loads the lists from the backend.
@@ -110,6 +97,9 @@ async function loadLists(owner: string = '') {
   });
 }
 
+/**
+ * Adds a list to the backend.
+ */
 async function addlist() {
   const baseUrl = import.meta.env.VITE_BACKEND_BASE_URL
   const endpoint = baseUrl + '/listen';

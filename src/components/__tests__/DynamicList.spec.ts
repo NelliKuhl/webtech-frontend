@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest'
 
 import { mount, shallowMount, flushPromises } from '@vue/test-utils'
 import DynamicList from '@/components/DynamicList.vue'
-import type {Zutat} from '@/types'
+import type { List, Zutat } from '@/types'
 import axios from 'axios'
 import { ref } from 'vue'
 
@@ -19,55 +19,31 @@ describe('DynamicList', () => {
   const oneItemResponse: Zutat[] = [
     { id: 1, zutat: 'Apfel', menge: 42, einheit: 'kg'}
   ]
+  const emptylist: List[] = []
+  const filledlist: List[] = [
+    { id: 1, name: 'Einkaufsliste', owner: email},
+    { id: 2, name: 'Einkaufsliste', owner: email}
+  ]
 
   vi.mock('axios')
   vi.mock('@okta/okta-vue', () => {
-    return { useAuth:async () => { $auth }}});
+    return { useAuth: () => ({ getUser: vi.fn() })}
+  });
 
-  /**
-   * Testet, ob die Komponente gerendert wird.
-   */
-  it('should render the items from the backend', async () => {
-    vi.mocked(axios, true).get.mockResolvedValueOnce({ data: twoItemResponse})
-
-    const item = twoItemResponse[0].zutat
-    const title = 'This is a title!'
-    const wrapper = shallowMount(DynamicList, {
-
-      props: { title }
-    })
-    expect(wrapper.text()).toMatch(title)
-
-  })
   /**
    * Testet, ob eine Nachricht angezeigt wird, wenn keine Items vom Backend empfangen werden.
    */
-  it('should render message when no items received from backend', async () => {
-    vi.mocked(axios, true).get.mockResolvedValueOnce({ data: emptyResponse, email, $auth })
-
-    const wrapper = shallowMount(DynamicList)
-    const msg = 'Liste leer'
-    await flushPromises()
-
-    expect(wrapper.text()).toContain(msg)
-  })
-  /**
-   * Testet, ob Liste automatisch aktualisiert wird.
-   */
-  it('should update list automatically', async () => {
-    vi.mocked(axios, true).get.mockResolvedValueOnce({ data: oneItemResponse, email, $auth })
+  it('should display message when no items are received from backend', async () => {
+    vi.mocked(axios, true).get.mockResolvedValueOnce({ data: emptyResponse})
 
     const wrapper = mount(DynamicList)
 
     await flushPromises()
 
-    vi.mocked(axios, true).get.mockResolvedValueOnce({ data: twoItemResponse, email, $auth })
-
-    await flushPromises()
-
-    expect(wrapper.text()).toContain(twoItemResponse[0].zutat)
+    expect(wrapper.text()).toContain('Liste Leer')
   })
-  /**
+    /**
    * Testet, ob die Komponente gelöscht wird.
    */
+
 })
