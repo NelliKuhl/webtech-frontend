@@ -1,18 +1,27 @@
 <template>
+  <header>
+    <!--Logo&Titel-->
+    <div class="logo-container">
+      <img src='https://i.imgur.com/YIWCHfi.png' alt="Logo N&M" style="width:20%; border-top-style: v-bind() "/>
+      <h1>Meine Einkaufslisten</h1>
+    </div>
+  </header>
+  <!--Liste auswählen & löschen-->
   <div class="recipe-container">
     <div style="display: flex; align-items: center; justify-content: space-between;">
       <div style="display: flex; align-items: center;">
         <h3><button type="button" @click="deleteList(listId)" class="listedeletebutton">&#x1F5D1;</button></h3>
         <select v-model="listId" class="dropdown-menu1" @change="loadZutaten" style="margin-left: 10px;">
-          <option value="" disabled>Auswählen</option>
           <option v-for="list in lists" :key="list.id" :value="list.id">{{ list.name }}</option>
         </select>
       </div>
+      <!-- neue Liste erstellen -->
       <div style="display: flex; align-items: center; margin-bottom: 20px">
-        <h3><input v-model="namenField" placeholder="Neue Liste (Name)" type="text" maxlength="18" style="margin-right: 10px;"></h3>
-        <h3><button type="button" @click="addlist">Erstellen</button></h3>
+        <h3><button v-if="namenField?.length" type="button" @click="addlist">Erstellen</button></h3>
+        <h3><input v-model="namenField" placeholder="Neue Liste (Name)" type="text" maxlength="18" style="margin-left: 10px;"></h3>
       </div>
     </div>
+    <!--Liste-->
     <div class="form-container">
       <input v-model="zutatField" placeholder="Artikel" type="text" maxlength="18">
       <input v-model="mengeField" placeholder="Menge" type="number" @input="validateMenge" @keydown="preventE">
@@ -25,8 +34,8 @@
         <option value="Stück">Stück</option>
         <option value="Dose/n">Dose/n</option>
         <option value="Packung/en">Packung/en</option>
-       </select>
-      <button type="button" @click="addZutat()" class="hinzufügenbutton">Hinzufügen</button>
+      </select>
+      <button type="button" @click="addZutat()">Hinzufügen</button>
     </div>
     <div v-if="zutat?.length" class="table-container">
       <table>
@@ -56,7 +65,7 @@
       </table>
     </div>
     <div v-else>
-      <p>Liste Leer</p>
+      <p class="liste-leer">Liste Leer</p>
     </div>
   </div>
 </template>
@@ -103,14 +112,14 @@ async function loadLists(owner: string = '') {
 async function addlist() {
   const baseUrl = import.meta.env.VITE_BACKEND_BASE_URL
   const endpoint = baseUrl + '/listen';
-    const data: List = {
-        name: namenField.value,
-        owner: email.value
-    }
-    const response: AxiosResponse = await axios.post(endpoint, data);
-    const responseData: List = response.data;
-    console.log('Success:', responseData)
-    lists.value.push(responseData)
+  const data: List = {
+    name: namenField.value,
+    owner: email.value
+  }
+  const response: AxiosResponse = await axios.post(endpoint, data);
+  const responseData: List = response.data;
+  console.log('Success:', responseData)
+  lists.value.push(responseData)
   namenField.value = '';
   listId.value = responseData.id;
   await loadZutaten();
@@ -154,15 +163,15 @@ async function loadZutaten() {
 async function addZutat () {
   const baseUrl = import.meta.env.VITE_BACKEND_BASE_URL
   const endpoint = baseUrl + '/listen/'  + listId.value + '/zutaten'
-    const data: Zutat = {
-        zutat: zutatField.value,
-        menge: mengeField.value,
-        einheit: einheitField.value
-    }
-    const response: AxiosResponse = await axios.post(endpoint, data);
-    const responseData: Zutat = response.data;
-    console.log('Success:', responseData)
-    zutat.value.push(responseData)
+  const data: Zutat = {
+    zutat: zutatField.value,
+    menge: mengeField.value,
+    einheit: einheitField.value
+  }
+  const response: AxiosResponse = await axios.post(endpoint, data);
+  const responseData: Zutat = response.data;
+  console.log('Success:', responseData)
+  zutat.value.push(responseData)
   zutatField.value = '';
   mengeField.value = '';
   einheitField.value = '';
@@ -187,6 +196,26 @@ function validateMenge() {
   if (mengeField.value > maxMenge) {
     mengeField.value = maxMenge;
   }
+  const minMenge = 0;
+  if (mengeField.value < minMenge) {
+    mengeField.value = minMenge;
+  }
+  const maxDecimalDigits = 4;
+
+  // Convert the input to a string for further manipulation
+  let stringValue = mengeField.value.toString();
+
+  // Split the string into integer and decimal parts
+  let [integerPart, decimalPart] = stringValue.split('.');
+
+  // Limit the decimal part to the specified number of digits
+  if (decimalPart && decimalPart.length > maxDecimalDigits) {
+    decimalPart = decimalPart.slice(0, maxDecimalDigits);
+    stringValue = `${integerPart}.${decimalPart}`;
+  }
+
+  // Update the model with the formatted value
+  mengeField.value = parseFloat(stringValue);
 }
 
 /**
@@ -250,15 +279,6 @@ button {
   border-radius: 4px;
   cursor: pointer;
 }
-.hinzufügenbutton{
-  background-color: #3eb26c;
-  color: #fff;
-  padding: 8px 15px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
 .listedeletebutton {
   background-color: #bc3c3c;
   color: #fff;
@@ -337,5 +357,17 @@ th {
 /* Übergangseffekt */
 .dropdown-menu1 {
   transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  color: #2e85b9;
+}
+
+.liste-leer{
+  color: #2e85b9;
 }
 </style>
