@@ -100,8 +100,8 @@ async function loadLists(owner: string = '') {
   const baseUrl = import.meta.env.VITE_BACKEND_BASE_URL;
   const endpoint = baseUrl + '/listen' + '?owner=' + owner;
   const response: AxiosResponse = await axios.get(endpoint);
-  const responseData: List[] = response.data;
-  responseData.forEach((item) => {
+  const responseData: List[] = response?.data;
+  responseData?.forEach((item) => {
     lists.value.push(item);
   });
 }

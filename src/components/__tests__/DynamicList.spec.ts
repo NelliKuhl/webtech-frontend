@@ -1,6 +1,6 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach, test } from 'vitest'
 
-import { shallowMount, flushPromises} from '@vue/test-utils'
+import {shallowMount, flushPromises, mount} from '@vue/test-utils'
 import DynamicList from '@/components/DynamicList.vue'
 import type { List, Zutat } from '@/types'
 import axios from 'axios'
@@ -24,6 +24,10 @@ describe('DynamicList', () => {
   const onefilledlist: List[] = [
     { id: 1, name: 'Einkaufsliste', owner: email}
   ]
+  const twofilledlist: List[] = [
+    { id: 1, name: 'Einkaufsliste', owner: email},
+    { id: 2, name: 'Einkaufsliste2', owner: email}
+  ]
 
   vi.mock('axios')
   vi.mock('@okta/okta-vue', () => {
@@ -31,6 +35,13 @@ describe('DynamicList', () => {
   });
 
 
+  /**
+   * Testet, ob die Komponente existiert.
+   */
+  it('mounts correctly', () => {
+    const wrapper = mount(DynamicList);
+    expect(wrapper.exists()).toBe(true);
+  });
 
   /**
    * Testet, ob eine Nachricht angezeigt wird, wenn keine Items vom Backend empfangen werden.
@@ -45,51 +56,35 @@ describe('DynamicList', () => {
     expect(wrapper.text()).toContain('Liste Leer')
   })
 
-
-
   /**
-  *   Test für das Hinzufügen einer Zutat:
-   *   Überprüfe, ob das Hinzufügen einer Zutat die Zutatenliste aktualisiert.
-  */
-
-  /**
-  *   Test für das Löschen einer Zutat:
-   *   Überprüfe, ob das Löschen einer Zutat die Zutatenliste korrekt aktualisiert.
-  */
-
-  /**
-   *  Test für das Hinzufügen einer Liste:
-   *  Überprüfe, ob das Hinzufügen einer Liste die Listenliste (ja, das klingt komisch) aktualisiert.
+   * Testet, ob eine Liste aus dem backend gerendert wird.
    */
+  it('should render a list from the backend', async () => {
+    vi.mocked(axios, true).get.mockResolvedValueOnce({ data: onefilledlist })
+
+    const wrapper = shallowMount(DynamicList)
+
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('Einkaufsliste')
+  })
 
   /**
-  *   Test für das Löschen einer Liste:
-   *   Überprüfe, ob das Löschen einer Liste die Listenliste korrekt aktualisiert und auch die dazugehörigen Zutaten löscht.
-  */
-
-
-  /**
-  *   Test für die Anzeige von Zutaten:
-   *   Überprüfe, ob die Zutaten korrekt auf der Oberfläche angezeigt werden, wenn sie vorhanden sind.
-  */
-
-
-  /**
-  *   Test für die Auswahl einer Liste:
+   *   Test für die Auswahl einer Liste:
    *   Überprüfe, ob das Ändern der ausgewählten Liste die Zutatenliste aktualisiert.
-  */
+   */
+    it('should update the list of ingredients when a list is selected', async () => {
+      vi.mocked(axios, true).get.mockResolvedValueOnce({data: twofilledlist})
+      vi.mocked(axios, true).get.mockResolvedValueOnce({data: oneZutat})
 
-  /**
-  *   Test für die Verhinderung des Buchstabens 'e':
-   *   Überprüfe, ob das Eingeben des Buchstabens 'e' in das Menge-Feld verhindert wird.
-  */
+      const wrapper = shallowMount(DynamicList)
 
-  /**
-  *   Test für Verhinderung von zu hoher Eingabe
-  */
+      await flushPromises()
 
-  /**
-  *   Test für Verhinderung von - Eingaben
-  */
+      const list = wrapper.find('.dropdown-menu1')
+      await list.trigger('change')
+
+      expect(wrapper.text()).toContain('Einkaufsliste2')
+    })
 
 })
